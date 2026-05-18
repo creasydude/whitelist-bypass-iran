@@ -1,0 +1,38 @@
+name: Build headless Linux amd64
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:   # allows manual triggering
+
+jobs:
+  build-headless:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+
+      - name: Set up Node.js (for any potential JS dependencies)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Build headless binaries
+        run: |
+          chmod +x build-headless.sh
+          ./build-headless.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: headless-binaries-linux-amd64
+          path: |
+            headless/bale/headless-bale-creator
+            headless/bale-joiner/headless-bale-joiner
