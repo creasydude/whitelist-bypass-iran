@@ -1,4 +1,4 @@
-name: Build headless Linux amd64 (creator + joiner)
+name: Build headless Linux amd64 (separate artifacts)
 
 on:
   push:
@@ -21,17 +21,20 @@ jobs:
         working-directory: ./headless/bale
         run: |
           go build -o headless-bale-creator-linux-amd64 .
-          # The binary now has a distinct name
 
       - name: Build headless joiner (Linux amd64)
         working-directory: ./headless/bale-joiner
         run: |
           go build -o headless-bale-joiner-linux-amd64 .
 
-      - name: Upload both binaries
+      - name: Upload creator artifact
         uses: actions/upload-artifact@v4
         with:
-          name: headless-binaries-linux-amd64
-          path: |
-            headless/bale/headless-bale-creator-linux-amd64
-            headless/bale-joiner/headless-bale-joiner-linux-amd64
+          name: headless-bale-creator-linux-amd64
+          path: headless/bale/headless-bale-creator-linux-amd64
+
+      - name: Upload joiner artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: headless-bale-joiner-linux-amd64
+          path: headless/bale-joiner/headless-bale-joiner-linux-amd64
