@@ -1,14 +1,12 @@
-name: Build headless Linux amd64
+name: Build headless Linux amd64 (creator + joiner)
 
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:   # allows manual triggering
+  workflow_dispatch:
 
 jobs:
-  build-headless:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -19,20 +17,21 @@ jobs:
         with:
           go-version: '1.26'
 
-      - name: Set up Node.js (for any potential JS dependencies)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Build headless binaries
+      - name: Build headless creator (Linux amd64)
+        working-directory: ./headless/bale
         run: |
-          chmod +x build-headless.sh
-          ./build-headless.sh
+          go build -o headless-bale-creator-linux-amd64 .
+          # The binary now has a distinct name
 
-      - name: Upload artifacts
+      - name: Build headless joiner (Linux amd64)
+        working-directory: ./headless/bale-joiner
+        run: |
+          go build -o headless-bale-joiner-linux-amd64 .
+
+      - name: Upload both binaries
         uses: actions/upload-artifact@v4
         with:
           name: headless-binaries-linux-amd64
           path: |
-            headless/bale/headless-bale-creator
-            headless/bale-joiner/headless-bale-joiner
+            headless/bale/headless-bale-creator-linux-amd64
+            headless/bale-joiner/headless-bale-joiner-linux-amd64
